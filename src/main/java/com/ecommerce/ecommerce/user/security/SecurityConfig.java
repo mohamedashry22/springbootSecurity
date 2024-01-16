@@ -20,14 +20,13 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF
+                .csrf(csrf -> csrf.disable()) 
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/api/public/**").permitAll() // Public endpoints
-                        .anyExchange().authenticated() // All other endpoints require authentication
+                        .pathMatchers("/api/public/**").permitAll()
+                        .anyExchange().authenticated() 
                 )
-                .httpBasic(httpBasicSpec -> httpBasicSpec.disable()); // Disable basic authentication
+                .httpBasic(httpBasicSpec -> httpBasicSpec.disable()); 
 
-        // Add custom JWT authentication filter
         http.addFilterAt(jwtAuthenticationWebFilter(), SecurityWebFiltersOrder.AUTHENTICATION);
 
         return http.build();
@@ -35,11 +34,9 @@ public class SecurityConfig {
 
     @Bean
     public WebSessionManager webSessionManager() {
-        // Emulate SessionCreationPolicy.STATELESS
         return exchange -> Mono.empty();
     }
 
-    // Define your jwtAuthenticationWebFilter bean here
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationWebFilter() {
         return new JwtAuthenticationFilter();
