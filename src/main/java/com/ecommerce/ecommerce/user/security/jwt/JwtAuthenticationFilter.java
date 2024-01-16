@@ -19,17 +19,14 @@ public class JwtAuthenticationFilter implements WebFilter {
             String authToken = token.substring(7); // Remove "Bearer " prefix
 
             return Mono.just(authToken)
-                    .map(JwtUtil::verifyToken) // Assuming this method returns a DecodedJWT object
+                    .map(JwtUtil::verifyToken)
                     .map(jwt -> {
                         String username = jwt.getSubject();
-                        // Create authentication token (you should set proper authorities based on your needs)
                         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList());
-                        // Set authentication in the SecurityContext
                         return auth;
                     })
                     .flatMap(auth -> chain.filter(exchange).contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth)))
                     .onErrorResume(e -> {
-                        // Handle the error, e.g., log it, set response status, etc.
                         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                         return exchange.getResponse().setComplete();
                     });
